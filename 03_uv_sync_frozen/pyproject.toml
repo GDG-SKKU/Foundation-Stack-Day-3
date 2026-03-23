@@ -1,0 +1,62 @@
+# ============================================================
+# [project] — 프로젝트 기본 정보 (PEP 621 표준)
+# Python 패키지 생태계가 이 섹션을 읽어 프로젝트를 식별합니다.
+# ============================================================
+[project]
+name = "frozen-practice"                # 패키지 이름 (pip install 할 때 쓰이는 이름)
+version = "0.1.0"                       # 시맨틱 버전: MAJOR.MINOR.PATCH
+description = "uv sync --frozen 실습"
+requires-python = ">=3.11, <3.12"       # Python 3.11.x만 허용 (3.12 미만)
+
+# 프로덕션에서 필요한 핵심 의존성 목록
+# uv sync --frozen 실행 시 uv.lock에 고정된 버전 그대로 설치됩니다.
+dependencies = [
+    "pydantic>=2.11.0",                 # 데이터 검증 라이브러리
+]
+
+# ============================================================
+# [dependency-groups] — 개발 전용 의존성 (PEP 735)
+# uv sync 시 기본으로 함께 설치되지만,
+# --no-dev 옵션을 주면 제외할 수 있습니다. (예: Dockerfile)
+# ============================================================
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",                    # 테스트 프레임워크
+]
+
+# ============================================================
+# [build-system] — 빌드 백엔드 설정 (PEP 517)
+#
+# Python 패키지를 배포 가능한 형태(.whl)로 만들려면 빌드 백엔드가 필요합니다.
+# 대표적인 빌드 백엔드:
+#   - setuptools : 가장 오래된 표준. setup.py / setup.cfg 시절부터 사용.
+#   - hatchling  : 빠르고 가볍다. pyproject.toml만으로 설정 완결.
+#   - flit       : 단순한 프로젝트에 적합. 최소한의 설정.
+#   - maturin    : Rust + Python 혼합 프로젝트용.
+#
+# requires: 빌드에 필요한 패키지 목록
+# build-backend: 빌드를 수행할 모듈 경로
+# ============================================================
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# ============================================================
+# [tool.hatch.build.targets.wheel] — wheel 빌드 시 포함할 파일 설정
+#
+# wheel(.whl)은 Python의 배포 패키지 형식입니다.
+# pip install 할 때 실제로 설치되는 파일이 바로 이 wheel 안에 들어있습니다.
+#
+# hatchling은 기본적으로 프로젝트 이름과 같은 디렉토리를 찾습니다.
+# 예) name = "frozen-practice" → frozen_practice/ 폴더를 찾음
+#
+# 하지만 우리 프로젝트는 src/ 레이아웃을 사용하므로,
+# packages = ["src"]로 명시적으로 알려줘야 합니다.
+# 이 설정이 없으면 "Unable to determine which files to ship" 에러가 발생합니다.
+#
+# src 레이아웃의 장점:
+#   - 소스코드와 설정 파일이 깔끔하게 분리됨
+#   - 설치하지 않고 import하는 실수를 방지 (테스트 신뢰성 향상)
+# ============================================================
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

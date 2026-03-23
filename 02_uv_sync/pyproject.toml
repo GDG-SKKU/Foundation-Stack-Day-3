@@ -1,0 +1,82 @@
+# ============================================================
+# [project] — 프로젝트 기본 정보 (PEP 621 표준)
+# Python 패키지 생태계가 이 섹션을 읽어 프로젝트를 식별합니다.
+# ============================================================
+[project]
+name = "foundation-stack-day3"          # 패키지 이름 (pip install 할 때 쓰이는 이름)
+version = "0.1.0"                       # 시맨틱 버전: MAJOR.MINOR.PATCH
+description = "Foundation Stack Day 3 - uv & ruff 실습"
+requires-python = ">=3.11, <3.12"       # Python 3.11.x만 허용 (3.12 미만)
+
+# 프로덕션에서 필요한 핵심 의존성 목록
+# uv sync 실행 시 여기 나열된 패키지들이 설치됩니다.
+dependencies = [
+    "pydantic>=2.11.0",                 # 데이터 검증 라이브러리
+]
+
+# ============================================================
+# [dependency-groups] — 개발 전용 의존성 (PEP 735)
+# uv sync 시 기본으로 함께 설치되지만,
+# --no-dev 옵션을 주면 제외할 수 있습니다.
+# ============================================================
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",                    # 테스트 프레임워크
+]
+
+# ============================================================
+# [build-system] — 빌드 백엔드 설정 (PEP 517)
+#
+# Python 패키지를 배포 가능한 형태(.whl)로 만들려면 빌드 백엔드가 필요합니다.
+# 대표적인 빌드 백엔드:
+#   - setuptools : 가장 오래된 표준. setup.py / setup.cfg 시절부터 사용.
+#   - hatchling  : 빠르고 가볍다. pyproject.toml만으로 설정 완결.
+#   - flit       : 단순한 프로젝트에 적합. 최소한의 설정.
+#   - maturin    : Rust + Python 혼합 프로젝트용.
+#
+# requires: 빌드에 필요한 패키지 목록
+# build-backend: 빌드를 수행할 모듈 경로
+# ============================================================
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# ============================================================
+# [tool.hatch.build.targets.wheel] — wheel 빌드 시 포함할 파일 설정
+#
+# wheel(.whl)은 Python의 배포 패키지 형식입니다.
+# pip install 할 때 실제로 설치되는 파일이 바로 이 wheel 안에 들어있습니다.
+#
+# hatchling은 기본적으로 프로젝트 이름과 같은 디렉토리를 찾습니다.
+# 예) name = "foundation-stack-day3" → foundation_stack_day3/ 폴더를 찾음
+#
+# ── 레이아웃 비교 ──────────────────────────────────────────
+#
+# [Flat 레이아웃] ← 이 프로젝트(02_uv_sync)가 사용하는 방식
+#   02_uv_sync/
+#   ├── foundation_stack_day3/   ← 프로젝트 이름과 동일한 폴더
+#   │   └── __init__.py
+#   ├── pyproject.toml
+#   └── uv.lock
+#   → 프로젝트 이름과 폴더 이름이 같으면 hatchling이 자동으로 찾습니다.
+#   → 아래처럼 명시해도 되고, 생략해도 동작은 동일합니다.
+#
+# [src 레이아웃] ← 03_uv_sync_frozen에서 사용하는 방식
+#   03_uv_sync_frozen/
+#   ├── src/                     ← 소스코드를 src/ 안에 격리
+#   │   └── __init__.py
+#   ├── pyproject.toml
+#   └── uv.lock
+#   → packages = ["src"] 명시 필요. 없으면 에러 발생.
+#   → 장점: 소스와 설정 분리, 미설치 상태에서 import 실수 방지
+# ============================================================
+[tool.hatch.build.targets.wheel]
+packages = ["foundation_stack_day3"]
+
+# ============================================================
+# [tool.pytest.ini_options] — pytest 설정
+# pytest.ini 파일 대신 pyproject.toml에 통합하여 관리합니다.
+# ============================================================
+[tool.pytest.ini_options]
+testpaths = ["tests"]                   # 테스트 파일을 찾을 디렉토리
+pythonpath = ["."]                      # import 경로에 프로젝트 루트 추가
