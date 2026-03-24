@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from mission import Member
+from mission_2 import Member
 
 
 class TestMemberDefaults:
